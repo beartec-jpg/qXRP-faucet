@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
@@ -80,7 +80,7 @@ function TxHashDisplay({ hash }: { hash: string }) {
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
-export default function FaucetPage() {
+function FaucetPageInner() {
   const searchParams = useSearchParams()
   const [address, setAddress]   = useState(() => searchParams?.get('address') ?? '')
   const [status, setStatus]     = useState<NetworkStatus>({ online: false })
@@ -314,5 +314,13 @@ export default function FaucetPage() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function FaucetPage() {
+  return (
+    <Suspense>
+      <FaucetPageInner />
+    </Suspense>
   )
 }
