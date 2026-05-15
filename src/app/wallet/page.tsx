@@ -308,11 +308,10 @@ export default function WalletPage() {
             <div className="text-xs text-slate-500">Wallet · Passkey secured</div>
           </div>
         </div>
-        <nav className="flex items-center gap-4 text-sm">
-          <Link href="/" className="text-slate-400 hover:text-white transition-colors">
-            Faucet
-          </Link>
-          <span className="text-brand-500 font-medium">Wallet</span>
+        <nav className="flex items-center gap-1 text-sm">
+          <Link href="/" className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Faucet</Link>
+          <Link href="/scan" className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Explorer</Link>
+          <span className="px-3 py-1.5 rounded-lg bg-brand-500/10 text-brand-500 font-medium">Wallet</span>
         </nav>
       </header>
 

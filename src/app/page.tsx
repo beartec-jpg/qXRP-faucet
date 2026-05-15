@@ -171,11 +171,10 @@ function FaucetPageInner() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <nav className="flex items-center gap-4 text-sm">
-              <span className="text-brand-500 font-medium">Faucet</span>
-              <Link href="/wallet" className="text-slate-400 hover:text-white transition-colors">
-                Wallet
-              </Link>
+            <nav className="flex items-center gap-1 text-sm">
+              <span className="px-3 py-1.5 rounded-lg bg-brand-500/10 text-brand-500 font-medium">Faucet</span>
+              <Link href="/scan" className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Explorer</Link>
+              <Link href="/wallet" className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Wallet</Link>
             </nav>
             <StatusDot online={status.online} state={status.state} />
           </div>
