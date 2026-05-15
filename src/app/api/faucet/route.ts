@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { getAccountInfo, getLedgerIndex, submitTx } from '@/lib/rpc'
 import { signPayment, dropsFromQxrp } from '@/lib/xrpl-sign'
-import { isValidClassicAddress } from 'xrpl'
+import { isValidClassicAddress } from 'ripple-address-codec'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
