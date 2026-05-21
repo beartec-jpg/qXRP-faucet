@@ -143,7 +143,9 @@ export default function MarketplacePage() {
         body:   JSON.stringify({ tx_blob }),
       })
       const data = await res.json()
-      setTxResult({ ok: !!data.success, msg: data.message ?? data.result ?? '', hash: data.hash })
+      if (data.error) throw new Error(data.error)
+      const msg = [data.result, data.message].filter(Boolean).join(' — ')
+      setTxResult({ ok: !!data.success, msg, hash: data.hash })
       if (data.success) {
         setTimeout(() => refresh(wallet.address), 4000)
       }
@@ -205,7 +207,9 @@ export default function MarketplacePage() {
         body:   JSON.stringify({ tx_blob }),
       })
       const data = await res.json()
-      setTxResult({ ok: !!data.success, msg: data.message ?? data.result ?? '', hash: data.hash })
+      if (data.error) throw new Error(data.error)
+      const msg = [data.result, data.message].filter(Boolean).join(' — ')
+      setTxResult({ ok: !!data.success, msg, hash: data.hash })
       setSwapAmt('')
       if (data.success) {
         setTimeout(() => refresh(wallet.address), 4000)
