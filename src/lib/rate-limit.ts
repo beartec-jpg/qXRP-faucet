@@ -10,16 +10,33 @@ const WINDOW_SECONDS = parseInt(process.env.RATE_LIMIT_WINDOW_SECONDS ?? '86400'
 // Upstash Redis limiter (production)
 // --------------------------------------------------------------------------
 function makeRedisLimiter(): Ratelimit | null {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) return null
-  const redis = new Redis({
-    url: process.env.KV_REST_API_URL,
-    token: process.env.KV_REST_API_TOKEN,
-  })
-  return new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(REQUESTS, `${WINDOW_SECONDS}s`),
-    prefix: 'qxrp_faucet',
-  })
+  // Support multiple common variable name patterns used by Vercel + Upstash over time
+  const candidates: Array<{ url: string | undefined; token: string | undefined; name: string }> = [
+    { url: process.env.KV_REST_API_URL,        token: process.env.KV_REST_API_TOKEN,        name: 'KV_REST_API_*' },
+    { url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN, name: 'UPSTASH_REDIS_REST_*' },
+  ]
+
+  for (const c of candidates) {
+    if (c.url && c.token) {
+      if (!c.url.startsWith('https://')) {
+        console.warn(`[rate-limit] ${c.name} URL does not start with https:// — skipping`)
+        continue
+      }
+      try {
+        const redis = new Redis({ url: c.url, token: c.token })
+        console.log(`[rate-limit] Using Upstash Redis via ${c.name}`)
+        return new Ratelimit({
+          redis,
+          limiter: Ratelimit.slidingWindow(REQUESTS, `${WINDOW_SECONDS}s`),
+          prefix: 'qxrp_faucet',
+        })
+      } catch (err) {
+        console.error(`[rate-limit] Failed to init Redis using ${c.name}:`, err)
+      }
+    }
+  }
+
+  return null
 }
 
 // --------------------------------------------------------------------------
@@ -53,11 +70,16 @@ export interface LimitResult {
 }
 
 export async function checkRateLimit(key: string): Promise<LimitResult> {
-  if (!limiter) limiter = makeRedisLimiter()
+  try {
+    if (!limiter) limiter = makeRedisLimiter()
 
-  if (limiter) {
-    const r = await limiter.limit(key)
-    return { success: r.success, reset: new Date(r.reset).toISOString() }
+    if (limiter) {
+      const r = await limiter.limit(key)
+      return { success: r.success, reset: new Date(r.reset).toISOString() }
+    }
+  } catch (err) {
+    console.warn('[rate-limit] Redis limiter failed, using in-memory fallback:', err)
+    // fall through to memory
   }
 
   // fallback

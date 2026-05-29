@@ -15,6 +15,10 @@ const FAUCET_ACCOUNT = process.env.FAUCET_ACCOUNT ?? ''
 const FAUCET_SECRET  = process.env.FAUCET_SECRET  ?? ''
 const DRIP_AMOUNT    = parseFloat(process.env.DRIP_AMOUNT_QXRP ?? '100')
 
+if (!FAUCET_ACCOUNT || !FAUCET_SECRET) {
+  console.error('[faucet] FATAL: FAUCET_ACCOUNT and FAUCET_SECRET must be set (use the funded genesis account)')
+}
+
 function ip(req: NextRequest): string {
   return (
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
@@ -68,7 +72,7 @@ export async function POST(req: NextRequest) {
     return err('Faucet not configured', 500)
   }
 
-  // ── Fetch current sequence + ledger ──────────────────────────────────────
+  // ── Fetch current sequence + ledger (from the faucet's own account) ─────
   let sequence: number
   let lastLedgerSequence: number
   try {
@@ -78,8 +82,12 @@ export async function POST(req: NextRequest) {
     ])
     sequence = acctInfo.account_data.Sequence
     lastLedgerSequence = ledger + 10
-  } catch (e) {
-    console.error('RPC error fetching account info:', e)
+  } catch (e: any) {
+    const msg = String(e?.message || e)
+    console.error('RPC error fetching faucet account info:', msg)
+    if (msg.includes('actNotFound') || msg.includes('Account not found')) {
+      return err('Faucet account is not funded on this network. Contact operator.', 503)
+    }
     return err('Cannot reach qXRP node. Try again shortly.', 503)
   }
 
@@ -110,9 +118,11 @@ export async function POST(req: NextRequest) {
     engineResult = result.engine_result
     engineMsg    = result.engine_result_message
     txHash       = result.tx_json?.hash ?? txHash
-  } catch (e) {
-    console.error('Submit error:', e)
-    return err('Transaction submission failed', 503)
+  } catch (e: any) {
+    const realError = e?.message || String(e)
+    console.error('Submit error from node:', realError)
+    // Return the actual error from the node instead of a generic message
+    return err(`Transaction submission failed: ${realError}`, 503)
   }
 
   // tesSUCCESS or terQUEUED are acceptable

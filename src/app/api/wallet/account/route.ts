@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const RPC = process.env.XRPLD_RPC_URL ?? 'http://37.27.47.236:6005'
+// Public RPC only (Node 1 full-history recommended)
+const RPC = process.env.XRPLD_RPC_URL ?? 'http://46.224.0.140:6005'
 
 // Minimal address validation — r + 25-34 base58 chars
 const ADDRESS_RE = /^r[1-9A-HJ-NP-Za-km-z]{24,34}$/

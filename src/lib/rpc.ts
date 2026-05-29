@@ -1,6 +1,7 @@
 // xrpld JSON-RPC client — pure fetch, no WebSocket needed
 
-const RPC_URL = process.env.XRPLD_RPC_URL ?? 'http://37.27.47.236:6005'
+// Public RPC only (port 6005). Node 1 = full history node (preferred for explorers/faucet).
+const RPC_URL = process.env.XRPLD_RPC_URL ?? 'http://46.224.0.140:6005'
 
 export interface ServerInfo {
   server_state: string
@@ -28,7 +29,9 @@ async function call<T>(method: string, params: Record<string, unknown> = {}): Pr
     cache: 'no-store',
   })
 
-  if (!res.ok) throw new Error(`RPC HTTP ${res.status}`)
+  if (!res.ok) {
+    throw new Error(`RPC unreachable (${RPC_URL}): HTTP ${res.status}`)
+  }
   const body = (await res.json()) as RpcResponse<T>
   if (body.result?.error) {
     throw new Error(body.result.error_message ?? body.result.error)
