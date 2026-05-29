@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "pnpm install --frozen-lockfile && pnpm run build",
   "framework": "nextjs",
   "functions": {
     "src/app/api/**/*.ts": {
