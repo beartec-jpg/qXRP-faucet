@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import Link from 'next/link'
+import Header from '@/components/Header'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -167,30 +167,9 @@ function FaucetPageInner() {
   return (
     <div className="flex-1 flex flex-col">
 
-      {/* Header */}
-      <header className="border-b border-slate-800/60 px-6 py-4">
-        <div className="max-w-lg mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {/* Logo mark */}
-            <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center font-bold text-slate-950 text-sm">
-              Q
-            </div>
-            <div>
-              <div className="font-semibold text-white leading-tight">{NETWORK_NAME}</div>
-              <div className="text-xs text-slate-500">Faucet · Network {NETWORK_ID}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <nav className="flex items-center gap-1 text-sm">
-              <span className="px-3 py-1.5 rounded-lg bg-brand-500/10 text-brand-500 font-medium">Faucet</span>
-              <Link href="/scan"        className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Explorer</Link>
-              <Link href="/wallet"     className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Wallet</Link>
-              <Link href="/marketplace" className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Market</Link>
-            </nav>
-            <StatusDot online={status.online} state={status.state} />
-          </div>
-        </div>
-      </header>
+      <Header current="faucet">
+        <StatusDot online={status.online} state={status.state} />
+      </Header>
 
       {/* Main */}
       <main className="flex-1 flex items-center justify-center px-4 py-12">

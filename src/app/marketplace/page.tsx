@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import Link from 'next/link'
+import Header from '@/components/Header'
 import {
   isPasskeySupported,
   authenticatePasskey,
@@ -237,22 +237,7 @@ export default function MarketplacePage() {
   return (
     <div className="min-h-screen flex flex-col">
 
-      {/* ── Header ── */}
-      <header className="border-b border-slate-800/60 px-4 py-3 flex items-center justify-between sticky top-0 bg-slate-950/90 backdrop-blur-sm z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center font-bold text-slate-950 text-sm">Q</div>
-          <div>
-            <div className="font-semibold text-white leading-tight">{NETWORK_NAME}</div>
-            <div className="text-xs text-slate-500">Marketplace · AMM DEX</div>
-          </div>
-        </div>
-        <nav className="flex items-center gap-1 text-sm">
-          <Link href="/"          className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Faucet</Link>
-          <Link href="/scan"      className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Explorer</Link>
-          <Link href="/wallet"    className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Wallet</Link>
-          <span                   className="px-3 py-1.5 rounded-lg bg-brand-500/10 text-brand-500 font-medium">Market</span>
-        </nav>
-      </header>
+      <Header current="market" />
 
       <main className="flex-1 px-4 py-8 max-w-2xl mx-auto w-full space-y-5">
 

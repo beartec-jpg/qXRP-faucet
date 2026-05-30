@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import Link from 'next/link'
+import Header from '@/components/Header'
 import {
   isPasskeySupported,
   registerPasskey,
@@ -45,7 +45,6 @@ type View = 'loading' | 'no-wallet' | 'restore' | 'dashboard' | 'send' | 'receiv
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const NETWORK_NAME = process.env.NEXT_PUBLIC_NETWORK_NAME ?? 'qXRP Testnet'
 const DROPS_PER_QXRP = 1_000_000
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -298,24 +297,7 @@ export default function WalletPage() {
   return (
     <div className="min-h-screen flex flex-col">
 
-      {/* ── Header ── */}
-      <header className="border-b border-slate-800/60 px-4 py-3 flex items-center justify-between sticky top-0 bg-slate-950/90 backdrop-blur-sm z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center font-bold text-slate-950 text-sm">
-            Q
-          </div>
-          <div>
-            <div className="font-semibold text-white leading-tight">{NETWORK_NAME}</div>
-            <div className="text-xs text-slate-500">Wallet · Passkey secured</div>
-          </div>
-        </div>
-        <nav className="flex items-center gap-1 text-sm">
-          <Link href="/" className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Faucet</Link>
-          <Link href="/scan" className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Explorer</Link>
-          <Link href="/marketplace" className="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors">Market</Link>
-          <span className="px-3 py-1.5 rounded-lg bg-brand-500/10 text-brand-500 font-medium">Wallet</span>
-        </nav>
-      </header>
+      <Header current="wallet" />
 
       <main className="flex-1 flex items-start justify-center px-4 py-10">
         <div className="w-full max-w-lg space-y-4">
