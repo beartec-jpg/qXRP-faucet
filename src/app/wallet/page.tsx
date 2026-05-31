@@ -735,10 +735,11 @@ export default function WalletPage() {
                     <div className="text-[10px] text-slate-500 uppercase tracking-wide font-medium">What the command does</div>
                     <ol className="space-y-0.5 text-xs text-slate-400">
                       {[
-                        'Installs Docker + starts official qXRP validator container',
+                        'Downloads the qXRP node binary and installs it on your server',
                         'Generates validator keys (classical + Falcon identity)',
                         'Prints a NEW validator r-address in huge text — fund this',
                         'Polls until ≥1,100 qXRP, then auto-submits ValidatorRegister + Bond(1000)',
+                        'Starts the validator as a systemd service (auto-restarts on reboot)',
                         'Installs reward claimer (cron) — claims go into the validator account',
                         `Your --payout (${wallet.address.slice(0,10)}…) is saved for easy future withdrawals`,
                       ].map((step, i) => (
@@ -748,6 +749,26 @@ export default function WalletPage() {
                         </li>
                       ))}
                     </ol>
+                  </div>
+
+                  {/* Handy commands */}
+                  <div className="space-y-1.5 pt-1 border-t border-slate-800">
+                    <div className="text-[10px] text-slate-500 uppercase tracking-wide font-medium">Handy commands (run on your server)</div>
+                    <div className="space-y-1">
+                      {[
+                        { label: 'Live logs',      cmd: 'journalctl -u qxrp-<node-name> -f' },
+                        { label: 'Status',         cmd: 'systemctl status qxrp-<node-name>' },
+                        { label: 'Restart',        cmd: 'systemctl restart qxrp-<node-name>' },
+                        { label: 'Stop',           cmd: 'systemctl stop qxrp-<node-name>' },
+                        { label: 'Node info',      cmd: "curl -s -X POST http://127.0.0.1:5005 -H 'Content-Type: application/json' -d '{\"method\":\"server_info\",\"params\":[{}]}' | python3 -m json.tool" },
+                        { label: 'Check balance',  cmd: 'curl -s -X POST http://127.0.0.1:5005 -H \'Content-Type: application/json\' -d \'{"method":"account_info","params":[{"account":"<validator-r-address>","ledger_index":"current"}]}\'' },
+                      ].map(({ label, cmd }) => (
+                        <div key={label} className="flex items-start gap-2">
+                          <span className="text-slate-600 text-[10px] flex-shrink-0 w-20 pt-0.5">{label}</span>
+                          <code className="text-[10px] font-mono text-cyan-700 break-all">{cmd}</code>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="text-[10px] text-slate-500 pt-1 border-t border-slate-800">
