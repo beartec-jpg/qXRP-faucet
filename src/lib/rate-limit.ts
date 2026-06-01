@@ -1,4 +1,5 @@
-// Rate limiting — uses Upstash Redis when env vars present, in-memory fallback for dev
+// Rate limiting — Upstash Redis is REQUIRED in production (fail-closed).
+// In-memory fallback only for local development.
 
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
@@ -78,11 +79,18 @@ export async function checkRateLimit(key: string): Promise<LimitResult> {
       return { success: r.success, reset: new Date(r.reset).toISOString() }
     }
   } catch (err) {
-    console.warn('[rate-limit] Redis limiter failed, using in-memory fallback:', err)
-    // fall through to memory
+    console.warn('[rate-limit] Redis limiter failed:', err)
   }
 
-  // fallback
+  // Production safety: fail closed if no Upstash/Redis is configured.
+  // In-memory fallback is only acceptable for local development.
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1'
+  if (isProduction) {
+    console.error('[rate-limit] No Upstash Redis configured in production — rate limiting disabled (FAUCET DRAIN RISK). Failing closed.')
+    return { success: false, reset: new Date(Date.now() + 60_000).toISOString() }
+  }
+
+  // Dev only fallback
   const r = memCheck(key)
   return { success: r.success, reset: r.reset.toISOString() }
 }

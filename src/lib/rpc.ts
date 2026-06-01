@@ -3,16 +3,18 @@
 
 const ENV_RPC = process.env.XRPLD_RPC_URL
 
-// Public nodes (port 6005 only). First one is preferred.
-export const PUBLIC_RPC_NODES = [
-  'http://46.224.0.140:6005',   // Node 1 - full history (recommended)
-  'http://204.168.175.194:6005', // Node 4
+// Public nodes (port 6005 only — MUST use https:// in production to protect signed transactions).
+// For the new clean testnet, configure via XRPLD_RPC_URL (recommended) or update this list.
+export const PUBLIC_RPC_NODES: string[] = [
+  // Examples only — replace with your deployed nodes using TLS
+  // 'https://your-node.example.com:6005',
 ]
 
 const RPC_NODES = ENV_RPC ? [ENV_RPC, ...PUBLIC_RPC_NODES] : PUBLIC_RPC_NODES
 
-// Convenient default for files that still do their own RPC calls
-export const DEFAULT_RPC_URL = PUBLIC_RPC_NODES[0]
+// Convenient default for files that still do their own RPC calls.
+// WARNING: Must be https:// in production. Plain HTTP exposes signed tx_blobs to MITM.
+export const DEFAULT_RPC_URL = ENV_RPC || (PUBLIC_RPC_NODES[0] ?? 'https://YOUR_NODE:6005')
 
 const RPC_TIMEOUT_MS = 4500 // short timeout so Vercel doesn't hang forever
 

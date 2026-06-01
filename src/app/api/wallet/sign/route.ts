@@ -4,7 +4,10 @@
 //
 // Routes through the signing proxy so Falcon fields (FalconPublicKey +
 // FalconSignature) are added — required by qXRP featureProofOfParticipation.
-// The proxy is the only path that produces valid signed transactions.
+// 
+// SECURITY: The SIGNER_PROXY_URL must be https:// in production.
+// Plaintext transmission of the seed to the proxy is a known limitation (see H-1).
+// Never use this wallet with real funds.
 
 import { NextRequest, NextResponse } from 'next/server'
 

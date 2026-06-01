@@ -145,7 +145,9 @@ export default function WalletPage() {
     try {
       const label = createLabel.trim() || 'My qXRP Wallet'
 
-      // 1. Generate XRPL keypair + seed (browser-side, never leaves device)
+      // 1. Generate XRPL keypair + seed (browser-side)
+      //    NOTE: For qXRP, the seed is sent to the server-side signing proxy when creating transactions
+      //    so that required Falcon fields can be added. See security disclosures below.
       const { seed, address, publicKey } = await generateWallet()
 
       // 2. Register passkey + get key material for encryption
@@ -241,6 +243,9 @@ export default function WalletPage() {
       const { keyBytes } = await authenticatePasskey(wallet.credentialId, wallet.hasPrf)
 
       // 2. Decrypt seed
+      // WARNING: For qXRP compatibility, this seed will be sent (in plaintext) to the server-side
+      // signing proxy so that required Falcon signature fields can be added.
+      // This means your seed temporarily leaves the device during transaction creation.
       const seed = await decryptSeed(wallet.encrypted, keyBytes)
 
       // 3. Fetch fresh sequence + ledger index just before signing (avoids tefPAST_SEQ)
@@ -339,7 +344,7 @@ export default function WalletPage() {
                   qXRP <span className="text-brand-500">Wallet</span>
                 </h1>
                 <p className="text-slate-400 text-sm">
-                  Your keys stay on this device, secured by passkey
+                  Your keys are generated on-device with passkeys. However, qXRP currently requires server-side Falcon signing. Your seed is sent to our signing proxy during transaction creation. This wallet is NOT suitable for real funds or mainnet use.
                 </p>
               </div>
 
